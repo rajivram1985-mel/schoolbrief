@@ -1,8 +1,15 @@
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import { createAuthClient } from '@/lib/supabase-auth';
 
 async function sendMagicLink(formData: FormData) {
   'use server';
+  const h = headers();
+  const forwardedHost = h.get('x-forwarded-host');
+  const host = forwardedHost ?? h.get('host') ?? 'localhost:3000';
+  const proto = forwardedHost ? 'https' : (h.get('x-forwarded-proto') ?? 'http');
+  const origin = `${proto}://${host}`;
+
   const email = (formData.get('email') as string)?.trim().toLowerCase();
   if (!email) redirect('/login?error=email_required');
 
@@ -10,7 +17,7 @@ async function sendMagicLink(formData: FormData) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      emailRedirectTo: `${origin}/auth/callback`,
     },
   });
 
