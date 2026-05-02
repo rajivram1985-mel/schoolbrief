@@ -124,9 +124,9 @@ const PRIORITY_COLORS: Record<string, string> = {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function PasteClient({
-  children,
+  childList,
 }: {
-  children: { id: string; name: string }[];
+  childList: { id: string; name: string }[];
 }) {
   const router = useRouter();
 
@@ -234,12 +234,12 @@ export default function PasteClient({
           Try a demo note
         </button>
 
-        {children.length > 0 && (
+        {childList.length > 0 && (
           <div className="mb-6">
             <p className="text-xs font-semibold text-gray-500 mb-2">Which child is this for?</p>
             <div className="flex flex-wrap gap-2">
               <ChildPill label="Both" selected={selectedChildId === null} onClick={() => setSelectedChildId(null)} />
-              {children.map((c) => (
+              {childList.map((c) => (
                 <ChildPill key={c.id} label={c.name} selected={selectedChildId === c.id} onClick={() => setSelectedChildId(c.id)} />
               ))}
             </div>
@@ -417,12 +417,12 @@ export default function PasteClient({
             ))}
           </div>
 
-          {children.length > 0 && (
+          {childList.length > 0 && (
             <div className="mb-4">
               <p className="text-xs font-semibold text-gray-600 mb-2">Tag to:</p>
               <div className="flex flex-wrap gap-2">
                 <ChildPill label="Both" selected={selectedChildId === null} onClick={() => setSelectedChildId(null)} />
-                {children.map((c) => (
+                {childList.map((c) => (
                   <ChildPill key={c.id} label={c.name} selected={selectedChildId === c.id} onClick={() => setSelectedChildId(c.id)} />
                 ))}
               </div>

@@ -19,5 +19,5 @@ export default async function PastePage() {
     .eq('user_id', user.id)
     .order('name');
 
-  return <PasteClient children={(children ?? []) as { id: string; name: string }[]} />;
+  return <PasteClient childList={(children ?? []) as { id: string; name: string }[]} />;
 }
