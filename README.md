@@ -61,7 +61,7 @@ Edit `.env.local` and fill in every value:
 | `SUPABASE_URL` | Supabase project → Settings → API → Project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase project → Settings → API → `service_role` key |
 | `POSTMARK_SERVER_TOKEN` | Postmark → server → API Tokens |
-| `POSTMARK_FROM_EMAIL` | A sender address verified in Postmark (e.g. `hello@schoolbrief.app`) |
+| `POSTMARK_FROM_EMAIL` | A sender address verified in Postmark (e.g. `hello@getschoolbrief.com`) |
 | `POSTMARK_INBOUND_HASH` | The hash part of your inbound address (for reference) |
 
 ---

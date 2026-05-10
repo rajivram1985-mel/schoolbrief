@@ -83,7 +83,7 @@ async function handleGmailVerification(
 
   const pm = new ServerClient(process.env.POSTMARK_SERVER_TOKEN);
   await pm.sendEmail({
-    From: process.env.POSTMARK_FROM_EMAIL ?? 'hello@schoolbrief.app',
+    From: process.env.POSTMARK_FROM_EMAIL ?? 'hello@getschoolbrief.com',
     To: userEmail,
     Subject: 'Action needed: confirm Gmail forwarding for SchoolBrief',
     TextBody: lines,
