@@ -21,7 +21,7 @@ async function sendMagicLink(formData: FormData) {
     },
   });
 
-  if (error) redirect(`/login?error=send_failed&detail=${encodeURIComponent(error.message)}`);
+  if (error) redirect('/login?error=send_failed');
   redirect(`/login?sent=1&email=${encodeURIComponent(email)}`);
 }
 
@@ -34,13 +34,12 @@ const ERROR_MESSAGES: Record<string, string> = {
 export default function LoginPage({
   searchParams,
 }: {
-  searchParams: { sent?: string; email?: string; error?: string; detail?: string };
+  searchParams: { sent?: string; email?: string; error?: string };
 }) {
   const sent = searchParams.sent === '1';
   const email = searchParams.email ?? '';
-  const detail = searchParams.detail ?? '';
   const errorMsg = searchParams.error
-    ? `${ERROR_MESSAGES[searchParams.error] ?? 'Something went wrong.'}${detail ? ` (${detail})` : ''}`
+    ? (ERROR_MESSAGES[searchParams.error] ?? 'Something went wrong.')
     : null;
 
   return (
