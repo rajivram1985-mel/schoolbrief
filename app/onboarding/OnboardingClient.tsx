@@ -72,7 +72,7 @@ export default function OnboardingClient({
   const [timedOut, setTimedOut] = useState(false);
   const [completing, setCompleting] = useState(false);
 
-  async function handleComplete() {
+  async function finishOnboarding(destination: string) {
     setCompleting(true);
     const { error } = await completeOnboarding();
     if (error) {
@@ -80,9 +80,12 @@ export default function OnboardingClient({
       // Surface error in console — rare, non-fatal for the user flow
       console.error('completeOnboarding failed:', error);
     }
-    router.push('/upcoming');
+    router.push(destination);
     router.refresh();
   }
+
+  const handleComplete = () => finishOnboarding('/upcoming');
+  const handlePasteNow = () => finishOnboarding('/paste');
 
   // Polling logic — only active on step 4
   useEffect(() => {
@@ -132,8 +135,8 @@ export default function OnboardingClient({
           </h1>
           <p className="text-base font-medium text-gray-600 mb-4">Never miss a school date again.</p>
           <p className="text-sm text-gray-500 leading-relaxed mb-8">
-            SchoolBrief reads your school emails and pulls out what matters — dates, actions,
-            payments, and things to bring. All in one calm place.
+            Paste or forward any school note — Compass, email, daycare app, or a paper note from
+            the bag. SchoolBrief pulls out the dates, actions, and things to bring.
           </p>
           <PrimaryButton onClick={() => setStep(2)}>Let&apos;s get started →</PrimaryButton>
         </div>
@@ -211,7 +214,7 @@ export default function OnboardingClient({
     );
   }
 
-  // ── Step 3: Connect email ───────────────────────────────────────────────────
+  // ── Step 3: Send your first note ────────────────────────────────────────────
   if (step === 3) {
     const copyAddress = async () => {
       if (!forwardingAddress) return;
@@ -225,91 +228,100 @@ export default function OnboardingClient({
         <StepLabel step={3} />
         <Progress step={3} />
         <BackButton onClick={() => setStep(2)} />
-        <h2 className="text-xl font-bold mb-1" style={{ color: '#1a1a1a' }}>Let&apos;s see it work.</h2>
+        <h2 className="text-xl font-bold mb-1" style={{ color: '#1a1a1a' }}>
+          Send us your first note.
+        </h2>
         <p className="text-sm text-gray-500 mb-5">
-          Open a recent email from your school, daycare, or teacher on your phone and tap Forward.
+          Most school updates come through Compass, Seesaw, or daycare apps where the email is just
+          a notification. Paste those straight in. Real emails can be forwarded.
         </p>
 
-        {/* Forwarding address box */}
-        <div className="bg-white rounded-2xl border border-gray-200 px-4 py-4 mb-5">
-          <p className="text-xs font-semibold text-gray-500 mb-2">Your SchoolBrief email</p>
+        {/* Path 1: Paste — primary */}
+        <div className="bg-white rounded-2xl px-4 py-4 shadow-sm border border-[#4A7C59] mb-3">
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-sm font-semibold text-gray-900">Paste from any app</p>
+            <span className="text-xs px-2 py-0.5 rounded-full text-white font-medium" style={{ backgroundColor: '#4A7C59' }}>
+              Easiest
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 mb-3">
+            Open Compass, your daycare app, or any school email on your phone. Copy the text and
+            paste it in. Works for everything.
+          </p>
+          <button
+            onClick={handlePasteNow}
+            disabled={completing}
+            className="w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+            style={{ backgroundColor: '#4A7C59' }}
+          >
+            {completing ? 'Opening…' : 'Paste a note now →'}
+          </button>
+        </div>
+
+        {/* Path 2: Forward an email */}
+        <div className="bg-white rounded-2xl px-4 py-4 shadow-sm mb-5">
+          <p className="text-sm font-semibold text-gray-900 mb-1">Or forward an email</p>
+          <p className="text-xs text-gray-500 mb-3">
+            Best for emails that already contain the news — newsletters, P&amp;C updates, or a
+            teacher writing directly.
+          </p>
+
           {forwardingAddress ? (
-            <>
-              <p className="text-sm font-mono break-all text-gray-800 mb-3">{forwardingAddress}</p>
+            <div className="rounded-xl bg-gray-50 px-3 py-3 mb-3">
+              <p className="text-xs font-semibold text-gray-500 mb-1.5">Your SchoolBrief email</p>
+              <p className="text-sm font-mono break-all text-gray-800 mb-2.5">{forwardingAddress}</p>
               <button
                 onClick={copyAddress}
-                className="w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                className="w-full rounded-lg py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ backgroundColor: copied ? '#4A7C59' : '#2BA8A0' }}
               >
                 {copied ? '✓ Copied!' : 'Copy address'}
               </button>
-            </>
+              <p className="text-xs text-gray-400 mt-2">
+                Unique to you — don&apos;t share it.
+              </p>
+            </div>
           ) : (
-            <p className="text-sm text-gray-400 italic">
+            <p className="text-sm text-gray-400 italic mb-3">
               Forwarding address not set — contact support or set it in Supabase.
             </p>
           )}
-          <p className="text-xs text-gray-400 mt-3">
-            This address is unique to you — don&apos;t share it.
-          </p>
-        </div>
 
-        {/* Two paths */}
-        <div className="space-y-3 mb-5">
-          <div className="bg-white rounded-2xl px-4 py-4 shadow-sm border border-[#4A7C59]">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-sm font-semibold text-gray-900">Forward one now</p>
-              <span className="text-xs px-2 py-0.5 rounded-full text-white font-medium" style={{ backgroundColor: '#4A7C59' }}>
-                Fastest
-              </span>
-            </div>
-            <p className="text-xs text-gray-500">
-              On your phone: open any school email → tap Forward → send it to the address above.
-              Done in 30 seconds.
+          <button
+            onClick={() => setGmailGuideOpen((o) => !o)}
+            className="text-xs font-medium hover:underline"
+            style={{ color: '#4A7C59' }}
+          >
+            {gmailGuideOpen ? 'Hide auto-forward guide ↑' : 'Set up Gmail auto-forwarding →'}
+          </button>
+
+          {gmailGuideOpen && (
+            <ol className="mt-4 space-y-3 text-xs text-gray-600 list-decimal list-inside">
+              <li>Open Gmail on your computer. Click the Settings cog (top right) → <strong>See all settings</strong>.</li>
+              <li>Click the <strong>Filters and Blocked Addresses</strong> tab.</li>
+              <li>Click <strong>Create a new filter</strong> at the bottom of the page.</li>
+              <li>
+                In the <strong>From</strong> field, add your school&apos;s sender address (e.g.{' '}
+                <code className="bg-gray-100 px-1 rounded">noreply@compass.education</code>).
+                You can also use domain matching (e.g. <code className="bg-gray-100 px-1 rounded">@compass.education</code>).
+                Add one filter per sender if your kids use different platforms.
+              </li>
+              <li>
+                Tick <strong>Forward it to</strong> and paste your SchoolBrief address. Click{' '}
+                <strong>Create filter</strong>.
+              </li>
+              <li>
+                Gmail will send a verification email to your SchoolBrief address.{' '}
+                <strong>SchoolBrief automatically forwards that verification to your login email</strong> —
+                just click the link to confirm.
+              </li>
+            </ol>
+          )}
+          {gmailGuideOpen && (
+            <p className="mt-3 text-xs text-gray-400">
+              Repeat for each school or daycare sender — your kids may use different platforms.
             </p>
-          </div>
-
-          <div className="bg-white rounded-2xl px-4 py-4 shadow-sm">
-            <p className="text-sm font-semibold text-gray-900 mb-1">Set up automatic forwarding</p>
-            <p className="text-xs text-gray-500 mb-2">
-              Set up a Gmail filter once and every school email arrives automatically.
-            </p>
-            <button
-              onClick={() => setGmailGuideOpen((o) => !o)}
-              className="text-xs font-medium hover:underline"
-              style={{ color: '#4A7C59' }}
-            >
-              {gmailGuideOpen ? 'Hide guide ↑' : 'Show me how →'}
-            </button>
-
-            {gmailGuideOpen && (
-              <ol className="mt-4 space-y-3 text-xs text-gray-600 list-decimal list-inside">
-                <li>Open Gmail on your computer. Click the Settings cog (top right) → <strong>See all settings</strong>.</li>
-                <li>Click the <strong>Filters and Blocked Addresses</strong> tab.</li>
-                <li>Click <strong>Create a new filter</strong> at the bottom of the page.</li>
-                <li>
-                  In the <strong>From</strong> field, add your school&apos;s sender address (e.g.{' '}
-                  <code className="bg-gray-100 px-1 rounded">noreply@compass.education</code>).
-                  You can also use domain matching (e.g. <code className="bg-gray-100 px-1 rounded">@compass.education</code>).
-                  Add one filter per sender if your kids use different platforms.
-                </li>
-                <li>
-                  Tick <strong>Forward it to</strong> and paste your SchoolBrief address. Click{' '}
-                  <strong>Create filter</strong>.
-                </li>
-                <li>
-                  Gmail will send a verification email to your SchoolBrief address.{' '}
-                  <strong>SchoolBrief automatically forwards that verification to your login email</strong> —
-                  just click the link to confirm.
-                </li>
-              </ol>
-            )}
-            {gmailGuideOpen && (
-              <p className="mt-3 text-xs text-gray-400">
-                Repeat for each school or daycare sender — your kids may use different platforms.
-              </p>
-            )}
-          </div>
+          )}
         </div>
 
         <PrimaryButton onClick={() => setStep(4)}>
@@ -368,13 +380,14 @@ export default function OnboardingClient({
           <PrimaryButton onClick={handleComplete} disabled={completing}>
             {completing ? 'Setting up…' : 'Go to Upcoming →'}
           </PrimaryButton>
-          <a
-            href="/paste"
-            className="block mt-3 text-sm text-center hover:underline"
+          <button
+            onClick={handlePasteNow}
+            disabled={completing}
+            className="block mx-auto mt-3 text-sm text-center hover:underline disabled:opacity-40"
             style={{ color: '#4A7C59' }}
           >
-            Paste a note manually instead →
-          </a>
+            {completing ? 'Opening…' : 'Paste a note manually instead →'}
+          </button>
         </div>
       ) : (
         // Waiting

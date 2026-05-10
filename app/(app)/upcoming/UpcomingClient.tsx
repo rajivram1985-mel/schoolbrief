@@ -155,15 +155,19 @@ export default function UpcomingClient({ items: initialItems }: { items: Upcomin
       <div className="px-4 pt-16 text-center">
         <p className="text-2xl mb-3">📅</p>
         <p className="text-sm text-gray-500 leading-relaxed max-w-xs mx-auto mb-6">
-          No upcoming dates yet. Forward a school email to your SchoolBrief address to get started.
+          No upcoming dates yet. Paste a note from Compass, an email, or any school app — we&apos;ll
+          pull out the dates.
         </p>
         <Link
           href="/paste"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-semibold"
           style={{ backgroundColor: '#4A7C59' }}
         >
-          <span>+</span> Paste a note to try it
+          <span>+</span> Paste a note
         </Link>
+        <p className="text-xs text-gray-400 mt-4 max-w-xs mx-auto">
+          Or forward a school email to your SchoolBrief address.
+        </p>
       </div>
     );
   }
